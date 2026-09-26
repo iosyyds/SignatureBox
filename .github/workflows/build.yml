@@ -16,14 +16,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+      - name: Show Xcode version
+        run: |
+          xcodebuild -version
+          ls /Applications/ | grep Xcode
 
       - name: Install XcodeGen
         run: brew install xcodegen
 
       - name: Generate Xcode Project
         run: xcodegen generate
+
+      - name: Show project
+        run: ls -la
 
       - name: Build for testing (unsigned)
         run: |
