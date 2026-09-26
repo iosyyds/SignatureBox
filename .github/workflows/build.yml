@@ -10,52 +10,55 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show Xcode version
+      - name: Show environment
         run: |
           xcodebuild -version
-          ls /Applications/ | grep Xcode
+          sw_vers
+          which xcodegen || echo "no xcodegen"
 
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Generate Xcode Project
+      - name: Generate project
         run: xcodegen generate
 
-      - name: Show project
+      - name: List files
         run: ls -la
 
-      - name: Build for testing (unsigned)
+      - name: Build
         run: |
           xcodebuild build \
             -project SignatureBox.xcodeproj \
             -scheme SignatureBox \
-            -destination 'generic/platform=iOS' \
+            -sdk iphoneos \
             -configuration Release \
-            CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_IDENTITY="" \
-            PROVISIONING_PROFILE_SPECIFIER="" \
+            CODE_SIGNING_REQUIRED=NO \
             CONFIGURATION_BUILD_DIR=./build
+        continue-on-error: true
+
+      - name: Check build output
+        run: ls -la build/ || echo "no build dir"
 
       - name: Package IPA
         run: |
           mkdir -p build/Payload
-          cp -r build/SignatureBox.app build/Payload/
+          cp -r build/Release-iphoneos/SignatureBox.app build/Payload/
           cd build
-          zip -r SignatureBox-unsigned.ipa Payload
-          mv SignatureBox-unsigned.ipa ../
+          zip -r SignatureBox.ipa Payload
+          mv SignatureBox.ipa ../
 
-      - name: Create Release
+      - name: Upload Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: Build #${{ github.run_number }}
-          files: SignatureBox-unsigned.ipa
+          tag_name: v${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          files: SignatureBox.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
