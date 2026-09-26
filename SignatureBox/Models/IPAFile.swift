@@ -1,6 +1,6 @@
 import Foundation
 
-struct IPAFile: Identifiable {
-    let id = UUID()
-    let name: String
+struct IPAFile {
+    let displayName: String
+    let bundleIdentifier: String
 }
