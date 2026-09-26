@@ -1,0 +1,23 @@
+name: SignatureBox
+options:
+  bundleIdPrefix: com.signaturebox
+  deploymentTarget:
+    iOS: "15.0"
+  xcodeVersion: "15.0"
+
+targets:
+  SignatureBox:
+    type: application
+    platform: iOS
+    sources:
+      - path: SignatureBox
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.signaturebox.app
+        PRODUCT_NAME: SignatureBox
+        TARGETED_DEVICE_FAMILY: "1,2"
+        IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: SignatureBox/Info.plist
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
