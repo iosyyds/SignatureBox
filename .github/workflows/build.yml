@@ -24,7 +24,6 @@ jobs:
 
       - name: Build
         run: |
-          set -e
           xcodebuild build \
             -project SignatureBox.xcodeproj \
             -scheme SignatureBox \
@@ -32,16 +31,25 @@ jobs:
             -configuration Release \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CONFIGURATION_BUILD_DIR=./build
+            CONFIGURATION_BUILD_DIR=./build 2>&1 | tee build.log
+        continue-on-error: true
 
-      - name: Find .app
-        run: |
-          find build -name "*.app" -type d
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+
+      - name: Check build output
+        run: find build -name "*.app" -type d || echo "no app found"
 
       - name: Package IPA
         run: |
-          set -e
           APP_PATH=$(find build -name "*.app" -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app found, exiting"
+            exit 1
+          fi
           echo "Found app at: $APP_PATH"
           mkdir -p build/Payload
           cp -r "$APP_PATH" build/Payload/
@@ -51,6 +59,7 @@ jobs:
 
       - name: Upload Release
         uses: softprops/action-gh-release@v2
+        if: success()
         with:
           tag_name: v${{ github.run_number }}
           name: Build ${{ github.run_number }}
