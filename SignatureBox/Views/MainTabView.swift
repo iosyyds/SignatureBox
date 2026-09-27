@@ -5,29 +5,34 @@ struct MainTabView: View {
         TabView {
             HomeView()
                 .tabItem {
-                    Label("首页", systemImage: "house.fill")
+                    Image(systemName: "house.fill")
+                    Text("首页")
                 }
             
             AppsView()
                 .tabItem {
-                    Label("应用", systemImage: "app.fill")
+                    Image(systemName: "app.fill")
+                    Text("应用")
                 }
             
             SourcesView()
                 .tabItem {
-                    Label("软件源", systemImage: "square.stack.3d.up.fill")
+                    Image(systemName: "square.stack.3d.up.fill")
+                    Text("软件源")
                 }
             
             ToolsView()
                 .tabItem {
-                    Label("工具", systemImage: "wrench.and.screwdriver.fill")
+                    Image(systemName: "wrench.and.screwdriver.fill")
+                    Text("工具")
                 }
             
             ProfileView()
                 .tabItem {
-                    Label("我的", systemImage: "person.crop.circle.fill")
+                    Image(systemName: "person.crop.circle.fill")
+                    Text("我的")
                 }
         }
-        .tint(.blue)
+        .accentColor(.blue)
     }
 }
